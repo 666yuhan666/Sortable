@@ -482,8 +482,41 @@ Sortable.prototype = /** @lends Sortable.prototype */ {
 			return; // only left button and enabled
 		}
 
-		// cancel dnd if original target is content editable
-		if (originalTarget.isContentEditable) {
+		// Check if target or any ancestor is an interactive element    
+		// Use the same ancestor-checking logic as filter and handle for consistency
+		let checkEl = originalTarget;
+		let isInteractive = false;
+		const interactiveTags = ['INPUT', 'TEXTAREA', 'BUTTON', 'SELECT'];
+
+		while (checkEl && checkEl.nodeType === 1) {
+			// Check isContentEditable
+			if (checkEl.isContentEditable) {
+				isInteractive = true;
+				break;
+			}
+			
+			let tagName = checkEl.tagName.toUpperCase();
+			
+			// Check interactive form elements
+			if (interactiveTags.indexOf(tagName) !== -1) {
+				isInteractive = true;
+				break;
+			}
+			
+			// Check anchor tags with href
+			if (tagName === 'A' && checkEl.getAttribute('href')) {
+				isInteractive = true;
+				break;
+			}
+			
+			// Stop if we reach the sortable container
+			if (checkEl === el) break;
+			
+			checkEl = getParentOrHost(checkEl);
+		}
+		
+		// Cancel dnd if interactive element is found
+		if (isInteractive) {
 			return;
 		}
 
