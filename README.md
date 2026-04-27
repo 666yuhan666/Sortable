@@ -283,6 +283,9 @@ Demo: https://jsbin.com/zosiwah/edit?js,output
 #### `delayOnTouchOnly` option
 Whether or not the delay should be applied only if the user is using touch (eg. on a mobile device). No delay will be applied in any other case. Defaults to `false`.
 
+**Note:** Even with `delay` or `delayOnTouchOnly` enabled, interactive elements (`input`, `textarea`, `button`, `select`, `a[href]`) 
+will still be immediately interactive and will not be affected by the delay. This ensures users can edit inputs and click buttons without waiting.
+
 
 ---
 
@@ -379,6 +382,10 @@ To make list items draggable, Sortable disables text selection by the user.
 That's not always desirable. To allow text selection, define a drag handler,
 which is an area of every list element that allows it to be dragged around.
 
+**Recommended when your list items contain interactive elements** (inputs, buttons, links, etc.). 
+Using `handle` ensures that only dragging the handle area will trigger sorting, 
+while other elements can be interacted with normally.
+
 Demo: https://jsbin.com/numakuh/edit?html,js,output
 
 ```js
@@ -407,6 +414,12 @@ Sortable.create(el, {
 
 #### `filter` option
 
+**For standard HTML interactive elements** (`<input>`, `<textarea>`, `<button>`, `<select>`, `<a href>`), 
+SortableJS automatically prevents drag when clicking these elements. You don't need to add them to `filter`.
+
+**Use `filter` for:**
+- Custom Web Components (e.g., `<my-input>`, `<v-btn>`, `<ui-button>`)
+- Other elements that should not trigger drag
 
 ```js
 Sortable.create(list, {
@@ -423,6 +436,15 @@ Sortable.create(list, {
 		}
 	}
 })
+```
+
+**Example with custom Web Components:**
+```js
+// For Vue, React, or custom components
+Sortable.create(list, {
+	filter: 'v-btn, my-input, ui-button, custom-select',
+	preventOnFilter: false  // Set to false to allow normal click behavior
+});
 ```
 
 
@@ -593,6 +615,120 @@ Save the current sorting (see [store](#store))
 
 ##### destroy()
 Removes the sortable functionality completely.
+
+
+---
+
+
+### Interactive Elements
+
+SortableJS automatically prevents drag when clicking standard HTML interactive elements. 
+This ensures users can edit inputs, click buttons, and follow links without accidentally triggering drag.
+
+#### Automatically Recognized Elements
+
+The following elements will **not** trigger drag when clicked:
+- `<input>` - All input types (text, checkbox, radio, etc.)
+- `<textarea>` - Text input areas
+- `<button>` - Buttons
+- `<select>` - Dropdown select elements
+- `<a href>` - Anchor tags with href attribute
+- `[contenteditable]` - Editable elements
+- Any element whose parent is editable
+
+#### How It Works
+
+The detection uses ancestor checking (same as `handle` and `filter` options), 
+so even if your interactive element is nested inside other elements, it will still be recognized.
+
+```html
+<!-- These will all work correctly -->
+<div class="list-item">
+    <span class="handle">≡</span>
+    <div>
+        <input type="text" value="Can be edited"> <!-- No drag -->
+        <div>
+            <button>Clickable</button> <!-- No drag -->
+        </div>
+    </div>
+    <a href="https://example.com">Link</a> <!-- No drag -->
+</div>
+```
+
+#### Recommended Configuration
+
+**Use `handle` when your list items contain interactive elements:**
+```js
+// ✅ Recommended - explicit drag area
+Sortable.create(list, {
+    handle: '.drag-handle',
+    draggable: '.list-item'
+});
+```
+
+**Use `delayOnTouchOnly` for mobile-friendly experience:**
+```js
+// ✅ Good for mobile - delay prevents accidental drag
+Sortable.create(list, {
+    delay: 300,
+    delayOnTouchOnly: true  // Only delay on touch devices
+});
+```
+
+#### Edge Cases & Limitations
+
+##### Custom Web Components
+
+SortableJS only recognizes standard HTML elements. If you use custom web components 
+or framework-specific components, you must manually add them to `filter`.
+
+**Example with Vue components:**
+```js
+// ⚠️ Custom components need manual configuration
+Sortable.create(list, {
+    filter: 'v-btn, v-text-field, v-select, my-custom-input',
+    preventOnFilter: false  // Allow normal click behavior
+});
+```
+
+**Example with React/Material-UI:**
+```js
+// ⚠️ Framework components render as different elements
+// Check what your components render to in the DOM
+Sortable.create(list, {
+    filter: '.MuiButton-root, .MuiInputBase-input, .MuiSelect-root',
+    preventOnFilter: false
+});
+```
+
+##### Deeply Nested Structures
+
+While SortableJS checks ancestors up to the sortable container, 
+extremely deep nesting (10+ levels) may impact performance. 
+Keep your DOM structure as flat as possible for best results.
+
+##### Shadow DOM
+
+Interactive elements inside Shadow DOM may not be automatically detected. 
+In these cases, use `filter` to explicitly exclude your custom elements.
+
+#### Configuration Quick Reference
+
+| Scenario | Recommendation |
+|----------|----------------|
+| List items contain inputs/buttons | Use `handle` option |
+| Mobile touch devices | Add `delayOnTouchOnly: true` |
+| Custom Web Components | Add to `filter` option |
+| Allow clicks on filtered elements | Set `preventOnFilter: false` |
+
+#### Comparison Table
+
+| Configuration | Input Edit | Button Click | Link Click | Normal Drag |
+|---------------|------------|--------------|------------|-------------|
+| No special config | ✅ Works | ✅ Works | ✅ Works | ✅ Works (click non-interactive area) |
+| With `handle` | ✅ Works | ✅ Works | ✅ Works | ✅ Works (only handle area) |
+| With `filter` (custom elements) | ✅ Works | ✅ Works | ✅ Works | ✅ Works |
+| With `delayOnTouchOnly` | ✅ Works (no delay) | ✅ Works (no delay) | ✅ Works (no delay) | ✅ Works (delayed on touch) |
 
 
 ---

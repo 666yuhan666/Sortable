@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="./style.css">
+	<style>
+		.interactive-filter-item {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 10px;
+		}
+		.interactive-filter-item .filtered {
+			background-color: #ffebee;
+			padding: 5px 10px;
+			border-radius: 3px;
+		}
+		.interactive-filter-item > *:not(:last-child) {
+			margin-right: 10px;
+		}
+		.interactive-filter-item input,
+		.interactive-filter-item textarea,
+		.interactive-filter-item button {
+			padding: 5px;
+		}
+		.item-label {
+			flex: 1;
+		}
+	</style>
+</head>
+<body>
+
+<h3>List 1: Filter + Interactive Elements</h3>
+<div class="list" id="list1">
+	<div class="interactive-filter-item">
+		<span class="item-label">Item 1 (with input)</span>
+		<input type="text" placeholder="Input field" id="input1">
+	</div>
+	<div class="interactive-filter-item">
+		<span class="item-label">Item 2 (with button)</span>
+		<button id="btn1">Click Me</button>
+	</div>
+	<div class="interactive-filter-item">
+		<span class="item-label">Item 3 (with link)</span>
+		<a href="https://github.com/SortableJS/Sortable" target="_blank" id="link1">Link</a>
+	</div>
+	<div class="interactive-filter-item">
+		<span class="item-label">Item 4 (filtered class)</span>
+		<span class="filtered">Filtered</span>
+	</div>
+	<div class="interactive-filter-item">
+		<span class="item-label">Item 5</span>
+	</div>
+</div>
+
+<h3>List 2: Filter + Handle + Interactive Elements</h3>
+<div class="list" id="list2">
+	<div class="interactive-filter-item">
+		<span class="handle">::</span>
+		<span class="item-label">Item 1 (with input)</span>
+		<input type="text" placeholder="Input field" id="input2">
+	</div>
+	<div class="interactive-filter-item">
+		<span class="handle">::</span>
+		<span class="item-label">Item 2 (with button)</span>
+		<button id="btn2">Click Me</button>
+	</div>
+	<div class="interactive-filter-item">
+		<span class="handle">::</span>
+		<span class="item-label">Item 3 (filtered)</span>
+		<span class="filtered">Filtered</span>
+	</div>
+	<div class="interactive-filter-item">
+		<span class="handle">::</span>
+		<span class="item-label">Item 4</span>
+	</div>
+	<div class="interactive-filter-item">
+		<span class="handle">::</span>
+		<span class="item-label">Item 5</span>
+	</div>
+</div>
+
+<script src="../Sortable.js"></script>
+
+<script type="text/javascript">
+	new Sortable(document.getElementById('list1'), {
+		draggable: '.interactive-filter-item',
+		filter: '.filtered',
+		animation: 150
+	});
+
+	new Sortable(document.getElementById('list2'), {
+		draggable: '.interactive-filter-item',
+		handle: '.handle',
+		filter: '.filtered',
+		animation: 150
+	});
+</script>
+
+</body>
+</html>
