@@ -487,6 +487,19 @@ Sortable.prototype = /** @lends Sortable.prototype */ {
 			return;
 		}
 
+		// cancel dnd if original target is an interactive element (input, textarea, button, select, a)
+		let interactiveElements = ['INPUT', 'TEXTAREA', 'BUTTON', 'SELECT'];
+		let tagName = originalTarget.tagName.toUpperCase();
+		
+		if (interactiveElements.indexOf(tagName) !== -1) {
+			return;
+		}
+		
+		// Also check for anchor tags with href attribute
+		if (tagName === 'A' && originalTarget.getAttribute('href')) {
+			return;
+		}
+
 		// Safari ignores further event handling after mousedown
 		if (!this.nativeDraggable && Safari && target && target.tagName.toUpperCase() === 'SELECT') {
 			return;

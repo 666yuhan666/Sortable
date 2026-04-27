@@ -384,3 +384,95 @@ test('Do not insert into empty list if outside emptyInsertThreshold', async brow
 		})
 		.expect(dragStartPosition.innerText).eql(dragEl.innerText);
 });
+
+
+fixture `Interactive Elements`
+	.page `./interactive-elements.html`;
+
+let interactiveList = Selector('#list1');
+
+test('Do not allow dragging when clicking input field', async browser => {
+	const dragStartPosition = interactiveList.child(0);
+	const dragEl = await dragStartPosition();
+	const targetStartPosition = interactiveList.child(1);
+	const target = await targetStartPosition();
+
+	await browser
+		.expect(dragStartPosition.innerText).contains('Item 1')
+		.expect(targetStartPosition.innerText).contains('Item 2')
+		.dragToElement(await dragStartPosition.child('input'), target)
+		.expect(dragStartPosition.innerText).contains('Item 1')
+		.expect(targetStartPosition.innerText).contains('Item 2');
+});
+
+test('Do not allow dragging when clicking textarea', async browser => {
+	const dragStartPosition = interactiveList.child(1);
+	const dragEl = await dragStartPosition();
+	const targetStartPosition = interactiveList.child(2);
+	const target = await targetStartPosition();
+
+	await browser
+		.expect(dragStartPosition.innerText).contains('Item 2')
+		.expect(targetStartPosition.innerText).contains('Item 3')
+		.dragToElement(await dragStartPosition.child('textarea'), target)
+		.expect(dragStartPosition.innerText).contains('Item 2')
+		.expect(targetStartPosition.innerText).contains('Item 3');
+});
+
+test('Do not allow dragging when clicking button', async browser => {
+	const dragStartPosition = interactiveList.child(2);
+	const dragEl = await dragStartPosition();
+	const targetStartPosition = interactiveList.child(3);
+	const target = await targetStartPosition();
+
+	await browser
+		.expect(dragStartPosition.innerText).contains('Item 3')
+		.expect(targetStartPosition.innerText).contains('Item 4')
+		.dragToElement(await dragStartPosition.child('button'), target)
+		.expect(dragStartPosition.innerText).contains('Item 3')
+		.expect(targetStartPosition.innerText).contains('Item 4');
+});
+
+test('Do not allow dragging when clicking select element', async browser => {
+	const dragStartPosition = interactiveList.child(3);
+	const dragEl = await dragStartPosition();
+	const targetStartPosition = interactiveList.child(4);
+	const target = await targetStartPosition();
+
+	await browser
+		.expect(dragStartPosition.innerText).contains('Item 4')
+		.expect(targetStartPosition.innerText).contains('Item 5')
+		.dragToElement(await dragStartPosition.child('select'), target)
+		.expect(dragStartPosition.innerText).contains('Item 4')
+		.expect(targetStartPosition.innerText).contains('Item 5');
+});
+
+test('Do not allow dragging when clicking anchor tag with href', async browser => {
+	const dragStartPosition = interactiveList.child(4);
+	const dragEl = await dragStartPosition();
+	const targetStartPosition = interactiveList.child(0);
+	const target = await targetStartPosition();
+
+	await browser
+		.expect(dragStartPosition.innerText).contains('Item 5')
+		.expect(targetStartPosition.innerText).contains('Item 1')
+		.dragToElement(await dragStartPosition.child('a'), target)
+		.expect(dragStartPosition.innerText).contains('Item 5')
+		.expect(targetStartPosition.innerText).contains('Item 1');
+});
+
+test('Allow dragging when clicking non-interactive part of item', async browser => {
+	const dragStartPosition = interactiveList.child(0);
+	const dragEl = await dragStartPosition();
+	const dragEndPosition = interactiveList.child(1);
+	const targetStartPosition = interactiveList.child(1);
+	const target = await targetStartPosition();
+	const targetEndPosition = interactiveList.child(0);
+
+	await browser
+		.expect(dragStartPosition.innerText).contains('Item 1')
+		.expect(targetStartPosition.innerText).contains('Item 2')
+		.dragToElement(await dragStartPosition.child('span'), target)
+		.expect(dragEndPosition.innerText).contains('Item 1')
+		.expect(targetEndPosition.innerText).contains('Item 2');
+});
