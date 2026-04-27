@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="./style.css">
+	<style>
+		.interactive-handle-item {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 10px;
+		}
+		.interactive-handle-item .handle {
+			cursor: grab;
+			padding: 5px 10px;
+			background-color: #e0e0e0;
+			border-radius: 3px;
+			margin-right: 10px;
+		}
+		.interactive-handle-item .handle:active {
+			cursor: grabbing;
+		}
+		.interactive-handle-item > *:not(:last-child) {
+			margin-right: 10px;
+		}
+		.interactive-handle-item input,
+		.interactive-handle-item textarea,
+		.interactive-handle-item button {
+			padding: 5px;
+		}
+		.item-label {
+			flex: 1;
+		}
+	</style>
+</head>
+<body>
+
+<h3>List 1: Handle + Interactive Elements</h3>
+<div class="list" id="list1">
+	<div class="interactive-handle-item">
+		<span class="handle">::</span>
+		<span class="item-label">Item 1 (with input)</span>
+		<input type="text" placeholder="Input field" id="input1">
+	</div>
+	<div class="interactive-handle-item">
+		<span class="handle">::</span>
+		<span class="item-label">Item 2 (with button)</span>
+		<button id="btn1">Click Me</button>
+	</div>
+	<div class="interactive-handle-item">
+		<span class="handle">::</span>
+		<span class="item-label">Item 3 (with link)</span>
+		<a href="https://github.com/SortableJS/Sortable" target="_blank" id="link1">Link</a>
+	</div>
+	<div class="interactive-handle-item">
+		<span class="handle">::</span>
+		<span class="item-label">Item 4 (with textarea)</span>
+		<textarea placeholder="Textarea" rows="1" id="textarea1"></textarea>
+	</div>
+	<div class="interactive-handle-item">
+		<span class="handle">::</span>
+		<span class="item-label">Item 5</span>
+	</div>
+</div>
+
+<h3>List 2: delayOnTouchOnly + Interactive Elements</h3>
+<div class="list" id="list2">
+	<div class="interactive-handle-item">
+		<span class="item-label">Item 1 (with input)</span>
+		<input type="text" placeholder="Input field" id="input2">
+	</div>
+	<div class="interactive-handle-item">
+		<span class="item-label">Item 2 (with button)</span>
+		<button id="btn2">Click Me</button>
+	</div>
+	<div class="interactive-handle-item">
+		<span class="item-label">Item 3</span>
+	</div>
+	<div class="interactive-handle-item">
+		<span class="item-label">Item 4</span>
+	</div>
+	<div class="interactive-handle-item">
+		<span class="item-label">Item 5</span>
+	</div>
+</div>
+
+<script src="../Sortable.js"></script>
+
+<script type="text/javascript">
+	new Sortable(document.getElementById('list1'), {
+		draggable: '.interactive-handle-item',
+		handle: '.handle',
+		animation: 150
+	});
+
+	new Sortable(document.getElementById('list2'), {
+		draggable: '.interactive-handle-item',
+		delay: 300,
+		delayOnTouchOnly: true,
+		animation: 150
+	});
+</script>
+
+</body>
+</html>
