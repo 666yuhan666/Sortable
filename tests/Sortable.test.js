@@ -615,3 +615,112 @@ test('With delayOnTouchOnly: allow normal dragging on non-interactive elements',
 		.expect(dragEndPosition.innerText).contains('Item 3')
 		.expect(targetEndPosition.innerText).contains('Item 4');
 });
+
+
+fixture `Interactive Elements with Filter`
+	.page `./interactive-filter.html`;
+
+let listFilter = Selector('#list1');
+let listFilterHandle = Selector('#list2');
+
+test('With filter: do not allow dragging when clicking input field', async browser => {
+	const dragStartPosition = listFilter.child(0);
+	const dragEl = await dragStartPosition();
+	const targetStartPosition = listFilter.child(1);
+	const target = await targetStartPosition();
+
+	await browser
+		.expect(dragStartPosition.innerText).contains('Item 1')
+		.expect(targetStartPosition.innerText).contains('Item 2')
+		.dragToElement(await dragStartPosition.child('input'), target)
+		.expect(dragStartPosition.innerText).contains('Item 1')
+		.expect(targetStartPosition.innerText).contains('Item 2');
+});
+
+test('With filter: do not allow dragging when clicking button', async browser => {
+	const dragStartPosition = listFilter.child(1);
+	const dragEl = await dragStartPosition();
+	const targetStartPosition = listFilter.child(2);
+	const target = await targetStartPosition();
+
+	await browser
+		.expect(dragStartPosition.innerText).contains('Item 2')
+		.expect(targetStartPosition.innerText).contains('Item 3')
+		.dragToElement(await dragStartPosition.child('button'), target)
+		.expect(dragStartPosition.innerText).contains('Item 2')
+		.expect(targetStartPosition.innerText).contains('Item 3');
+});
+
+test('With filter: do not allow dragging when clicking anchor tag', async browser => {
+	const dragStartPosition = listFilter.child(2);
+	const dragEl = await dragStartPosition();
+	const targetStartPosition = listFilter.child(3);
+	const target = await targetStartPosition();
+
+	await browser
+		.expect(dragStartPosition.innerText).contains('Item 3')
+		.expect(targetStartPosition.innerText).contains('Item 4')
+		.dragToElement(await dragStartPosition.child('a'), target)
+		.expect(dragStartPosition.innerText).contains('Item 3')
+		.expect(targetStartPosition.innerText).contains('Item 4');
+});
+
+test('With filter: do not allow dragging when clicking filtered element', async browser => {
+	const dragStartPosition = listFilter.child(3);
+	const dragEl = await dragStartPosition();
+	const targetStartPosition = listFilter.child(4);
+	const target = await targetStartPosition();
+
+	await browser
+		.expect(dragStartPosition.innerText).contains('Item 4')
+		.expect(targetStartPosition.innerText).contains('Item 5')
+		.dragToElement(await dragStartPosition.child('.filtered'), target)
+		.expect(dragStartPosition.innerText).contains('Item 4')
+		.expect(targetStartPosition.innerText).contains('Item 5');
+});
+
+test('With filter: allow dragging on non-filtered, non-interactive elements', async browser => {
+	const dragStartPosition = listFilter.child(4);
+	const dragEl = await dragStartPosition();
+	const dragEndPosition = listFilter.child(3);
+	const targetStartPosition = listFilter.child(3);
+	const target = await targetStartPosition();
+	const targetEndPosition = listFilter.child(4);
+
+	await browser
+		.expect(dragStartPosition.innerText).contains('Item 5')
+		.expect(targetStartPosition.innerText).contains('Item 4')
+		.dragToElement(await dragStartPosition.child('.item-label'), target)
+		.expect(dragEndPosition.innerText).contains('Item 5')
+		.expect(targetEndPosition.innerText).contains('Item 4');
+});
+
+test('With filter + handle: do not allow dragging when clicking input field', async browser => {
+	const dragStartPosition = listFilterHandle.child(0);
+	const dragEl = await dragStartPosition();
+	const targetStartPosition = listFilterHandle.child(1);
+	const target = await targetStartPosition();
+
+	await browser
+		.expect(dragStartPosition.innerText).contains('Item 1')
+		.expect(targetStartPosition.innerText).contains('Item 2')
+		.dragToElement(await dragStartPosition.child('input'), target)
+		.expect(dragStartPosition.innerText).contains('Item 1')
+		.expect(targetStartPosition.innerText).contains('Item 2');
+});
+
+test('With filter + handle: allow dragging only when clicking handle', async browser => {
+	const dragStartPosition = listFilterHandle.child(4);
+	const dragEl = await dragStartPosition();
+	const dragEndPosition = listFilterHandle.child(3);
+	const targetStartPosition = listFilterHandle.child(3);
+	const target = await targetStartPosition();
+	const targetEndPosition = listFilterHandle.child(4);
+
+	await browser
+		.expect(dragStartPosition.innerText).contains('Item 5')
+		.expect(targetStartPosition.innerText).contains('Item 4')
+		.dragToElement(await dragStartPosition.child('.handle'), target)
+		.expect(dragEndPosition.innerText).contains('Item 5')
+		.expect(targetEndPosition.innerText).contains('Item 4');
+});

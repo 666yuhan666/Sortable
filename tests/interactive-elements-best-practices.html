@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>SortableJS 交互元素最佳实践示例</title>
+	<link rel="stylesheet" type="text/css" href="./style.css">
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+
+		body {
+			font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+			max-width: 900px;
+			margin: 0 auto;
+			padding: 20px;
+			background-color: #f5f5f5;
+		}
+
+		h1 {
+			color: #333;
+			text-align: center;
+			margin-bottom: 10px;
+		}
+
+		.subtitle {
+			text-align: center;
+			color: #666;
+			margin-bottom: 30px;
+		}
+
+		.demo-section {
+			background: white;
+			border-radius: 8px;
+			padding: 20px;
+			margin-bottom: 30px;
+			box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		}
+
+		.demo-section h2 {
+			color: #333;
+			margin-top: 0;
+			margin-bottom: 5px;
+		}
+
+		.demo-section .description {
+			color: #666;
+			font-size: 14px;
+			margin-bottom: 15px;
+			padding-bottom: 15px;
+			border-bottom: 1px solid #eee;
+		}
+
+		.demo-section .config {
+			background: #f8f9fa;
+			padding: 10px 15px;
+			border-radius: 4px;
+			font-family: monospace;
+			font-size: 13px;
+			margin-bottom: 15px;
+			white-space: pre-wrap;
+			overflow-x: auto;
+		}
+
+		.list {
+			margin: 0;
+		}
+
+		.todo-item {
+			display: flex;
+			align-items: center;
+			padding: 12px 15px;
+			background: white;
+			border: 1px solid #e0e0e0;
+			margin-bottom: 8px;
+			border-radius: 6px;
+			transition: all 0.2s ease;
+		}
+
+		.todo-item:hover {
+			box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		}
+
+		.todo-item .drag-handle {
+			cursor: grab;
+			padding: 8px 12px;
+			background: #e3f2fd;
+			border-radius: 4px;
+			margin-right: 12px;
+			color: #1976d2;
+			font-weight: bold;
+			user-select: none;
+		}
+
+		.todo-item .drag-handle:active {
+			cursor: grabbing;
+			background: #bbdefb;
+		}
+
+		.todo-item .checkbox {
+			margin-right: 12px;
+			transform: scale(1.2);
+		}
+
+		.todo-item .item-title {
+			flex: 1;
+			margin-right: 12px;
+			font-size: 14px;
+			padding: 8px 12px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			transition: border-color 0.2s;
+		}
+
+		.todo-item .item-title:focus {
+			outline: none;
+			border-color: #1976d2;
+			box-shadow: 0 0 0 2px rgba(25,118,210,0.2);
+		}
+
+		.todo-item .action-btn {
+			padding: 8px 16px;
+			margin-left: 8px;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 13px;
+			transition: all 0.2s;
+		}
+
+		.todo-item .action-btn.edit {
+			background: #fff3e0;
+			color: #ef6c00;
+		}
+
+		.todo-item .action-btn.edit:hover {
+			background: #ffe0b2;
+		}
+
+		.todo-item .action-btn.delete {
+			background: #ffebee;
+			color: #c62828;
+		}
+
+		.todo-item .action-btn.delete:hover {
+			background: #ffcdd2;
+		}
+
+		.todo-item .action-link {
+			margin-left: 8px;
+			color: #1976d2;
+			text-decoration: none;
+			font-size: 13px;
+		}
+
+		.todo-item .action-link:hover {
+			text-decoration: underline;
+		}
+
+		.note-box {
+			background: #fff8e1;
+			border-left: 4px solid #ffc107;
+			padding: 15px;
+			margin-top: 20px;
+			border-radius: 0 4px 4px 0;
+		}
+
+		.note-box h3 {
+			margin: 0 0 10px 0;
+			color: #f57f17;
+			font-size: 14px;
+		}
+
+		.note-box ul {
+			margin: 0;
+			padding-left: 20px;
+			color: #5d4037;
+			font-size: 13px;
+			line-height: 1.8;
+		}
+
+		.best-practices {
+			background: #e8f5e9;
+			border-left: 4px solid #4caf50;
+			padding: 15px;
+			margin-top: 20px;
+			border-radius: 0 4px 4px 0;
+		}
+
+		.best-practices h3 {
+			margin: 0 0 10px 0;
+			color: #2e7d32;
+			font-size: 14px;
+		}
+
+		.best-practices ol {
+			margin: 0;
+			padding-left: 20px;
+			color: #1b5e20;
+			font-size: 13px;
+			line-height: 2;
+		}
+
+		.best-practices code {
+			background: #c8e6c9;
+			padding: 2px 6px;
+			border-radius: 3px;
+			font-family: monospace;
+		}
+
+		.test-result {
+			margin-top: 15px;
+			padding: 10px;
+			background: #e3f2fd;
+			border-radius: 4px;
+			font-size: 13px;
+			color: #1565c0;
+		}
+
+		.warning-box {
+			background: #ffebee;
+			border-left: 4px solid #f44336;
+			padding: 15px;
+			margin-top: 20px;
+			border-radius: 0 4px 4px 0;
+		}
+
+		.warning-box h3 {
+			margin: 0 0 10px 0;
+			color: #c62828;
+			font-size: 14px;
+		}
+
+		.warning-box p {
+			margin: 0;
+			color: #b71c1c;
+			font-size: 13px;
+			line-height: 1.6;
+		}
+	</style>
+</head>
+<body>
+
+	<h1>SortableJS 交互元素最佳实践</h1>
+	<p class="subtitle">当列表项包含输入框、按钮和链接时，如何安全使用拖拽排序</p>
+
+	<div class="demo-section">
+		<h2>示例 1：待办事项列表（推荐配置）</h2>
+		<p class="description">
+			使用 <code>handle</code> 选项，只有拖动 handle 区域才能排序。
+			输入框、按钮和链接可以正常使用。
+		</p>
+		<div class="config">
+Sortable.create(todoList, {
+    draggable: '.todo-item',
+    handle: '.drag-handle',
+    animation: 150
+});</div>
+
+		<div class="list" id="todo-list">
+			<div class="todo-item">
+				<span class="drag-handle">≡</span>
+				<input type="checkbox" class="checkbox">
+				<input type="text" class="item-title" value="学习 SortableJS 的使用方法">
+				<button class="action-btn edit">编辑</button>
+				<button class="action-btn delete">删除</button>
+				<a href="https://github.com/SortableJS/Sortable" class="action-link" target="_blank">查看文档</a>
+			</div>
+			<div class="todo-item">
+				<span class="drag-handle">≡</span>
+				<input type="checkbox" class="checkbox" checked>
+				<input type="text" class="item-title" value="安装依赖并配置环境">
+				<button class="action-btn edit">编辑</button>
+				<button class="action-btn delete">删除</button>
+			</div>
+			<div class="todo-item">
+				<span class="drag-handle">≡</span>
+				<input type="checkbox" class="checkbox">
+				<input type="text" class="item-title" value="编写测试用例验证功能">
+				<button class="action-btn edit">编辑</button>
+				<button class="action-btn delete">删除</button>
+			</div>
+		</div>
+
+		<div class="test-result">
+			<strong>测试方法：</strong>
+			1. 尝试点击输入框编辑文本 - 应该可以正常聚焦和输入<br>
+			2. 尝试点击"编辑"或"删除"按钮 - 应该可以正常点击<br>
+			3. 尝试点击"查看文档"链接 - 应该可以正常跳转<br>
+			4. 尝试拖拽 ≡ handle 区域 - 应该可以正常排序
+		</div>
+	</div>
+
+	<div class="demo-section">
+		<h2>示例 2：无 Handle 配置（自动识别）</h2>
+		<p class="description">
+			不使用 <code>handle</code> 选项时，SortableJS 会自动识别交互元素。
+			点击 input、textarea、button、select、a[href] 不会触发拖拽。
+		</p>
+		<div class="config">
+Sortable.create(simpleList, {
+    draggable: '.todo-item',
+    animation: 150
+});</div>
+
+		<div class="list" id="simple-list">
+			<div class="todo-item">
+				<span class="item-label">任务 1：</span>
+				<input type="text" class="item-title" value="输入框可以正常编辑">
+				<button class="action-btn edit">按钮可点击</button>
+				<a href="https://github.com/SortableJS/Sortable" class="action-link" target="_blank">链接可跳转</a>
+			</div>
+			<div class="todo-item">
+				<span class="item-label">任务 2：</span>
+				<select style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px;">
+					<option>下拉选择正常</option>
+					<option>选项 2</option>
+					<option>选项 3</option>
+				</select>
+				<textarea placeholder="文本域可编辑" rows="1" style="flex: 1; margin: 0 12px; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
+			</div>
+		</div>
+
+		<div class="note-box">
+			<h3>⚠️ 注意事项</h3>
+			<ul>
+				<li>点击输入框、按钮、链接等交互元素<strong>不会</strong>触发拖拽</li>
+				<li>点击列表项的空白区域或非交互元素（如普通 span）<strong>会</strong>触发拖拽</li>
+				<li>如果需要更精确的控制，建议使用 <code>handle</code> 选项</li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="demo-section">
+		<h2>推荐的最佳实践</h2>
+
+		<div class="best-practices">
+			<h3>✅ 推荐做法</h3>
+			<ol>
+				<li><strong>使用 <code>handle</code> 选项</strong> - 明确定义拖拽区域，避免与交互元素冲突</li>
+				<li><strong>交互元素保持独立</strong> - 输入框、按钮等放在 handle 之外，确保可点击</li>
+				<li><strong>使用 <code>delayOnTouchOnly</code></strong> - 在移动端减少误触，同时不影响桌面端体验</li>
+				<li><strong>自定义 Web Components 使用 <code>filter</code></strong> - 对于自定义组件，手动添加到 filter 选项</li>
+			</ol>
+		</div>
+
+		<div class="warning-box">
+			<h3>⚠️ 边界情况</h3>
+			<p>
+				<strong>自定义 Web Components：</strong>SortableJS 只会自动识别标准 HTML 交互元素（input、textarea、button、select、a[href]）。
+				如果你使用自定义组件（如 <code>&lt;my-input&gt;</code>、<code>&lt;v-btn&gt;</code> 等），
+				需要手动将它们添加到 <code>filter</code> 选项中。
+			</p>
+			<p style="margin-top: 10px; font-family: monospace; background: #ffcdd2; padding: 8px; border-radius: 4px;">
+				// 自定义组件需要手动配置 filter<br>
+				Sortable.create(el, {<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;filter: 'my-input, my-button, v-btn',<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;preventOnFilter: false<br>
+				});
+			</p>
+		</div>
+	</div>
+
+	<div class="demo-section">
+		<h2>配置选项说明</h2>
+
+		<table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+			<thead>
+				<tr style="background: #f5f5f5;">
+					<th style="padding: 12px; text-align: left; border: 1px solid #ddd;">选项</th>
+					<th style="padding: 12px; text-align: left; border: 1px solid #ddd;">说明</th>
+					<th style="padding: 12px; text-align: left; border: 1px solid #ddd;">推荐场景</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td style="padding: 12px; border: 1px solid #ddd; font-family: monospace; color: #1976d2;">handle</td>
+					<td style="padding: 12px; border: 1px solid #ddd;">指定拖拽触发区域</td>
+					<td style="padding: 12px; border: 1px solid #ddd; color: #2e7d32;">✅ 列表项包含交互元素时强烈推荐</td>
+				</tr>
+				<tr>
+					<td style="padding: 12px; border: 1px solid #ddd; font-family: monospace; color: #1976d2;">filter</td>
+					<td style="padding: 12px; border: 1px solid #ddd;">指定不触发拖拽的元素</td>
+					<td style="padding: 12px; border: 1px solid #ddd; color: #ef6c00;">⚠️ 自定义 Web Components 时需要</td>
+				</tr>
+				<tr>
+					<td style="padding: 12px; border: 1px solid #ddd; font-family: monospace; color: #1976d2;">delayOnTouchOnly</td>
+					<td style="padding: 12px; border: 1px solid #ddd;">仅在触摸设备启用延迟</td>
+					<td style="padding: 12px; border: 1px solid #ddd; color: #2e7d32;">✅ 移动端减少误触</td>
+				</tr>
+				<tr>
+					<td style="padding: 12px; border: 1px solid #ddd; font-family: monospace; color: #1976d2;">preventOnFilter</td>
+					<td style="padding: 12px; border: 1px solid #ddd;">filter 触发时是否阻止默认事件</td>
+					<td style="padding: 12px; border: 1px solid #ddd; color: #ef6c00;">⚠️ 设为 false 允许交互元素正常行为</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<script src="../Sortable.js"></script>
+
+	<script type="text/javascript">
+		Sortable.create(document.getElementById('todo-list'), {
+			draggable: '.todo-item',
+			handle: '.drag-handle',
+			animation: 150
+		});
+
+		Sortable.create(document.getElementById('simple-list'), {
+			draggable: '.todo-item',
+			animation: 150
+		});
+	</script>
+
+</body>
+</html>
